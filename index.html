@@ -6,7 +6,8 @@
     <title>DIMSUM BODUT - Premium Dimsum Delivery</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -986,8 +987,8 @@
 
                 <div class="dashboard-header">
                     <h3>Pesanan Terbaru</h3>
-                    <button class="download-btn" id="downloadCsv">
-                        <i class="fas fa-download"></i> Export CSV
+                    <button class="download-btn" id="downloadXls">
+                        <i class="fas fa-download"></i> Export Excel
                     </button>
                 </div>
                 
@@ -1015,10 +1016,10 @@
                 <div class="dashboard-header">
                     <h2 class="section-title">Manajemen Pesanan</h2>
                     <div style="display: flex; gap: 1rem;">
-                        <button class="download-btn" id="downloadSelectedCsv">
+                        <button class="download-btn" id="downloadSelectedXls">
                             <i class="fas fa-download"></i> Download Terpilih
                         </button>
-                        <button class="download-btn" id="downloadAllCsv" style="background: linear-gradient(45deg, #2563eb, #1d4ed8);">
+                        <button class="download-btn" id="downloadAllXls" style="background: linear-gradient(45deg, #2563eb, #1d4ed8);">
                             <i class="fas fa-download"></i> Download Semua
                         </button>
                     </div>
@@ -1062,8 +1063,8 @@
                 <h2 class="section-title">Laporan & Analitik</h2>
                 <div style="background: rgba(30, 30, 50, 0.8); padding: 2rem; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);">
                     <h3 style="margin-bottom: 1rem; color: #9370db;">Download Laporan</h3>
-                    <button class="download-btn" id="downloadReportCsv" style="margin-right: 1rem;">
-                        <i class="fas fa-download"></i> Semua Data Pesanan (.CSV)
+                    <button class="download-btn" id="downloadReportXls" style="margin-right: 1rem;">
+                        <i class="fas fa-download"></i> Semua Data Pesanan (.XLSX)
                     </button>
                 </div>
             </div>
@@ -1092,9 +1093,6 @@
     </div>
 
     <script>
-        // Initialize jsPDF properly
-        const jsPDF = window.jspdf.jsPDF;
-
         // Shopping cart and orders
         let cart = [];
         let orders = [];
@@ -1131,7 +1129,7 @@
         const downloadPdfBtn = document.getElementById('downloadPdfBtn');
         const closeInvoiceBtn = document.getElementById('closeInvoiceBtn');
         const selectAllOrders = document.getElementById('selectAllOrders');
-        const downloadSelectedCsv = document.getElementById('downloadSelectedCsv');
+        const downloadSelectedXls = document.getElementById('downloadSelectedXls');
 
         // Current invoice data
         let currentInvoiceData = null;
@@ -1553,7 +1551,7 @@
             }
         });
 
-        // Download PDF invoice - Simplified approach using browser's print to PDF
+        // Download PDF invoice - Fixed version
         downloadPdfBtn.addEventListener('click', function() {
             if (!currentInvoiceData) return;
             
@@ -1565,13 +1563,16 @@
                 <head>
                     <title>Invoice ${currentInvoiceData.orderNumber}</title>
                     <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        body { font-family: Arial, sans-serif; padding: 20px; margin: 0; }
                         .invoice-header { text-align: center; border-bottom: 2px solid #ff6b6b; padding-bottom: 20px; margin-bottom: 20px; }
-                        .invoice-header h1 { color: #ff6b6b; }
-                        .invoice-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+                        .invoice-header h1 { color: #ff6b6b; margin: 0; padding: 0; }
+                        .invoice-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; }
                         .invoice-items { margin: 20px 0; }
-                        .invoice-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
+                        .invoice-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; font-size: 14px; }
                         .invoice-total { text-align: right; font-size: 18px; font-weight: bold; color: #ff6b6b; margin-top: 20px; padding-top: 20px; border-top: 2px solid #ff6b6b; }
+                        @media print {
+                            body { padding: 0; }
+                        }
                     </style>
                 </head>
                 <body>
@@ -1620,17 +1621,38 @@
                     <div class="invoice-total">
                         TOTAL: Rp ${currentInvoiceData.totalAmount.toLocaleString('id-ID')}
                     </div>
+                    
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                        }
+                    <\/script>
                 </body>
                 </html>
             `);
             printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-            printWindow.close();
         });
 
-        // Download selected orders CSV
-        downloadSelectedCsv.addEventListener('click', function() {
+        // Excel export functions using SheetJS
+        function downloadExcel(data, filename) {
+            if (data.length === 0) {
+                alert('Tidak ada data untuk diunduh!');
+                return;
+            }
+            
+            // Convert data to worksheet
+            const ws = XLSX.utils.json_to_sheet(data);
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Pesanan");
+            
+            // Generate Excel file and download
+            XLSX.writeFile(wb, filename + ".xlsx");
+        }
+
+        // Download selected orders Excel
+        downloadSelectedXls.addEventListener('click', function() {
             const selectedCheckboxes = document.querySelectorAll('.order-checkbox:checked');
             if (selectedCheckboxes.length === 0) {
                 alert('Pilih minimal satu pesanan untuk diunduh!');
@@ -1640,7 +1662,19 @@
             const selectedOrderNumbers = Array.from(selectedCheckboxes).map(cb => cb.getAttribute('data-order'));
             const selectedOrders = orders.filter(order => selectedOrderNumbers.includes(order.orderNumber));
             
-            downloadOrdersCSV(selectedOrders, 'dimsum_bodut_selected_orders');
+            // Prepare data for Excel
+            const excelData = selectedOrders.map(order => ({
+                'No Order': order.orderNumber,
+                'Nama Pemesan': order.customerName,
+                'Produk': order.productName,
+                'Qty': order.qty,
+                'Total': order.totalPrice,
+                'No HP': order.phone,
+                'Alamat': order.address,
+                'Tanggal': order.timestamp
+            }));
+            
+            downloadExcel(excelData, 'dimsum_bodut_selected_orders');
         });
 
         // Generate order number
@@ -1650,54 +1684,68 @@
             return `DB${timestamp}${random}`;
         }
 
-        // Download CSV
-        function downloadCSV(filename, data) {
-            const csvContent = "text/csv;charset=utf-8," + encodeURIComponent(data);
-            const link = document.createElement("a");
-            link.setAttribute("href", csvContent);
-            link.setAttribute("download", filename);
-            link.style.visibility = "hidden";
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Download orders CSV
-        function downloadOrdersCSV(ordersToDownload, filenamePrefix) {
-            if (ordersToDownload.length === 0) {
-                alert('Tidak ada data pesanan untuk diunduh!');
-                return;
-            }
-            
-            const headers = ['No Order', 'Nama Pemesan', 'Produk', 'Qty', 'Total', 'No HP', 'Alamat', 'Tanggal'];
-            const csvContent = [
-                headers.join(','),
-                ...ordersToDownload.map(order => 
-                    `"${order.orderNumber}","${order.customerName}","${order.productName}","${order.qty}","${order.totalPrice}","${order.phone}","${order.address}","${order.timestamp}"`
-                )
-            ].join('\n');
-            
-            const filename = `${filenamePrefix}_${new Date().toISOString().split('T')[0]}.csv`;
-            downloadCSV(filename, csvContent);
-        }
-
-        // CSV download handlers
-        document.getElementById('downloadCsv').addEventListener('click', function() {
+        // Excel download handlers
+        document.getElementById('downloadXls').addEventListener('click', function() {
             if (orders.length === 0) {
                 alert('Tidak ada data pesanan untuk diunduh!');
                 return;
             }
             
             const recentOrders = orders.slice().reverse().slice(0, 10);
-            downloadOrdersCSV(recentOrders, 'dimsum_bodut_recent_orders');
+            const excelData = recentOrders.map(order => ({
+                'No Order': order.orderNumber,
+                'Nama Pemesan': order.customerName,
+                'Produk': order.productName,
+                'Qty': order.qty,
+                'Total': order.totalPrice,
+                'No HP': order.phone,
+                'Alamat': order.address,
+                'Tanggal': order.timestamp
+            }));
+            
+            downloadExcel(excelData, 'dimsum_bodut_recent_orders');
         });
 
-        document.getElementById('downloadAllCsv').addEventListener('click', function() {
-            downloadOrdersCSV(orders.slice().reverse(), 'dimsum_bodut_all_orders');
+        document.getElementById('downloadAllXls').addEventListener('click', function() {
+            if (orders.length === 0) {
+                alert('Tidak ada data pesanan untuk diunduh!');
+                return;
+            }
+            
+            const allOrders = orders.slice().reverse();
+            const excelData = allOrders.map(order => ({
+                'No Order': order.orderNumber,
+                'Nama Pemesan': order.customerName,
+                'Produk': order.productName,
+                'Qty': order.qty,
+                'Total': order.totalPrice,
+                'No HP': order.phone,
+                'Alamat': order.address,
+                'Tanggal': order.timestamp
+            }));
+            
+            downloadExcel(excelData, 'dimsum_bodut_all_orders');
         });
 
-        document.getElementById('downloadReportCsv').addEventListener('click', function() {
-            downloadOrdersCSV(orders.slice().reverse(), 'dimsum_bodut_report');
+        document.getElementById('downloadReportXls').addEventListener('click', function() {
+            if (orders.length === 0) {
+                alert('Tidak ada data pesanan untuk diunduh!');
+                return;
+            }
+            
+            const allOrders = orders.slice().reverse();
+            const excelData = allOrders.map(order => ({
+                'No Order': order.orderNumber,
+                'Nama Pemesan': order.customerName,
+                'Produk': order.productName,
+                'Qty': order.qty,
+                'Total': order.totalPrice,
+                'No HP': order.phone,
+                'Alamat': order.address,
+                'Tanggal': order.timestamp
+            }));
+            
+            downloadExcel(excelData, 'dimsum_bodut_report');
         });
 
         // Initialize with sample data for demo
