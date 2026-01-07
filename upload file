@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIMSUM BODUT - Premium Dimsum Delivery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding-bottom: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header Styles */
+        header {
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            background: #0a0a14;
+            z-index: 100;
+            border-bottom: 2px solid #ff6b6b;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cart-icon, .admin-icon {
+            position: relative;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff6b6b;
+            color: white;
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #b0b0c0;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Menu Section */
+        .menu-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 2.5rem;
+            color: #ff6b6b;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .menu-item {
+            background: rgba(30, 30, 50, 0.8);
+            border-radius: 15px;
+            padding: 1.8rem;
+            text-align: center;
+            transition: transform 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            border-color: #ff6b6b;
+        }
+
+        .menu-img {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.2rem;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+
+        .menu-item h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+            color: #ff8e53;
+        }
+
+        .menu-item p {
+            color: #b0b0c0;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .price {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin: 1rem 0;
+        }
+
+        .add-to-cart {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+            font-size: 0.95rem;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .add-to-cart:hover {
+            opacity: 0.9;
+        }
+
+        /* Cart Sidebar */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background: #0a0a14;
+            border-left: 2px solid #ff6b6b;
+            padding: 2rem;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .cart-sidebar.active {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cart-title {
+            font-size: 1.5rem;
+            color: #ff6b6b;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            margin-bottom: 2rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .cart-item-price {
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quantity-btn {
+            width: 24px;
+            height: 24px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .quantity {
+            min-width: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: #ff4757;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-left: 0.5rem;
+        }
+
+        /* Customer Info Form in Cart */
+        .customer-form {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(30, 30, 50, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-title {
+            color: #ff8e53;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: #b0b0c0;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(15, 15, 26, 0.9);
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .cart-total {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin: 1.5rem 0;
+            text-align: right;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .checkout-btn:hover {
+            opacity: 0.9;
+        }
+        .checkout-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Success Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #0a0a14;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            border: 2px solid #ff6b6b;
+        }
+
+        .modal h2 {
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+        }
+
+        .modal p {
+            color: #b0b0c0;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .close-modal {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Admin Login Modal */
+        .admin-login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .admin-login-content {
+            background: #0a0a14;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            border: 2px solid #9370db;
+        }
+
+        .admin-login-content h3 {
+            color: #9370db;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .password-input {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .password-input input {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(15, 15, 26, 0.9);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b0b0c0;
+            cursor: pointer;
+        }
+
+        .admin-login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #9370db, #8a2be2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        /* Admin Dashboard */
+        #adminDashboard {
+            display: none;
+        }
+
+        .admin-header {
+            background: #0a0a14;
+            padding: 1.5rem 0;
+            border-bottom: 2px solid #9370db;
+        }
+
+        .admin-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-logo-img {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #9370db, #8a2be2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .admin-logout {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(30, 30, 50, 0.8);
+            padding: 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            width: fit-content;
+        }
+
+        .admin-tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: #b0b0c0;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .admin-tab.active {
+            background: linear-gradient(45deg, #9370db, #8a2be2);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 30, 50, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card h4 {
+            color: #b0b0c0;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #9370db;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(30, 30, 50, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-table th {
+            color: #9370db;
+            font-weight: 600;
+            background: rgba(147, 112, 219, 0.1);
+        }
+
+        .admin-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .admin-table tr:hover {
+            background: rgba(147, 112, 219, 0.05);
+        }
+
+        .download-btn {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Invoice Modal */
+        .invoice-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1300;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .invoice-content {
+            background: white;
+            color: #333;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #ff6b6b;
+        }
+
+        .invoice-header h2 {
+            color: #ff6b6b;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .invoice-details {
+            margin-bottom: 2rem;
+        }
+
+        .invoice-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .invoice-items {
+            margin-bottom: 2rem;
+        }
+
+        .invoice-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .invoice-total {
+            text-align: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #ff6b6b;
+        }
+
+        .invoice-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .invoice-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .pdf-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+        }
+
+        .close-invoice {
+            background: #666;
+            color: white;
+        }
+
+        /* Checkbox styling */
+        .select-all-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .select-all-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .order-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cart-sidebar {
+                width: 300px;
+            }
+            
+            .hero {
+                padding: 2rem 0;
+            }
+            
+            .invoice-actions {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cart-sidebar {
+                width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Landing Page -->
+    <div id="mainPage">
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <div class="logo-img">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="logo-text">DIMSUM BODUT</div>
+                    </div>
+                    <div>
+                        <div class="cart-icon" id="cartIcon">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count" id="cartCount">0</span>
+                        </div>
+                        <div class="admin-icon" id="adminLoginIcon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="overlay" id="overlay"></div>
+
+        <div class="cart-sidebar" id="cartSidebar">
+            <div class="cart-header">
+                <h3 class="cart-title">Keranjang Belanja</h3>
+                <button class="close-cart" id="closeCart">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <p id="emptyCart">Keranjang belanja Anda kosong.</p>
+            </div>
+            
+            <!-- Customer Information Form -->
+            <div class="customer-form">
+                <h4 class="form-title">Informasi Pelanggan</h4>
+                <div class="form-group">
+                    <label for="customerName">Nama Pemesan</label>
+                    <input type="text" id="customerName" placeholder="Masukkan nama Anda">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Nomor WhatsApp/HP</label>
+                    <input type="tel" id="phone" placeholder="081234567890">
+                </div>
+                <div class="form-group">
+                    <label for="address">Alamat Penerima</label>
+                    <textarea id="address" rows="3" placeholder="Masukkan alamat lengkap Anda"></textarea>
+                </div>
+            </div>
+            
+            <div class="cart-total" id="cartTotal">Total: Rp 0</div>
+            <button class="checkout-btn" id="checkoutBtn" disabled>KONFIRMASI PESANAN</button>
+        </div>
+
+        <main class="container">
+            <section class="hero">
+                <h1>Pesanan Dimsum Premium</h1>
+                <p>Nikmati dimsum terbaik langsung di rumah Anda. Dibuat dengan bahan-bahan segar dan quality control terbaik!</p>
+            </section>
+
+            <section class="menu-section">
+                <h2 class="section-title">Menu Kami</h2>
+                <div class="menu-grid">
+                    <!-- Dimsum Original -->
+                    <div class="menu-item">
+                        <div class="menu-img">
+                            <i class="fas fa-drumstick-bite"></i>
+                        </div>
+                        <h3>DIMSUM ORIGINAL</h3>
+                        <p>Dimsum klasik dengan isian daging ayam pilihan dan bumbu rahasia yang lezat.</p>
+                        <div class="price">Rp 25.000</div>
+                        <button class="add-to-cart" data-product="DIMSUM ORIGINAL" data-price="25000">
+                            <i class="fas fa-plus"></i> Tambah ke Keranjang
+                        </button>
+                    </div>
+
+                    <!-- Dimsum Mentai -->
+                    <div class="menu-item">
+                        <div class="menu-img">
+                            <i class="fas fa-fish"></i>
+                        </div>
+                        <h3>DIMSUM MENTAI</h3>
+                        <p>Dimsum spesial dengan saus mentai premium yang gurih dan menggugah selera.</p>
+                        <div class="price">Rp 35.000</div>
+                        <button class="add-to-cart" data-product="DIMSUM MENTAI" data-price="35000">
+                            <i class="fas fa-plus"></i> Tambah ke Keranjang
+                        </button>
+                    </div>
+                    
+                    <!-- Dimsum Frozen -->
+                    <div class="menu-item">
+                        <div class="menu-img">
+                            <i class="fas fa-snowflake"></i>
+                        </div>
+                        <h3>DIMSUM FROZEN</h3>
+                        <p>Dimsum beku berkualitas tinggi, siap dikukus kapan saja. Praktis dan tahan lama!</p>
+                        <div class="price">Rp 20.000</div>
+                        <button class="add-to-cart" data-product="DIMSUM FROZEN" data-price="20000">
+                            <i class="fas fa-plus"></i> Tambah ke Keranjang
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="modal" id="successModal">
+            <div class="modal-content">
+                <h2>Pesanan Berhasil!</h2>
+                <p id="successMessage">Pesanan Anda telah berhasil dicatat.</p>
+                <button class="close-modal">TUTUP</button>
+            </div>
+        </div>
+
+        <div class="admin-login-modal" id="adminLoginModal">
+            <div class="admin-login-content">
+                <h3>Login Admin</h3>
+                <div class="password-input">
+                    <input type="password" id="adminPassword" placeholder="Masukkan password admin">
+                    <span class="toggle-password" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                <button class="admin-login-btn" id="adminLoginBtn">Login</button>
+                <p style="color: #666; font-size: 0.8rem; margin-top: 1rem; text-align: center;">
+                    Password: dimsumbodut2026
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard">
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <div class="admin-logo">
+                    <div class="admin-logo-img">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <h2 class="logo-text">Admin Dashboard</h2>
+                        <p style="color: #b0b0c0; font-size: 0.8rem;">DIMSUM BODUT</p>
+                    </div>
+                </div>
+                <button class="admin-logout" id="adminLogout">Logout</button>
+            </div>
+        </header>
+
+        <div class="admin-container">
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="dashboard">Dashboard</button>
+                <button class="admin-tab" data-tab="orders">Pesanan</button>
+                <button class="admin-tab" data-tab="customers">Pelanggan</button>
+                <button class="admin-tab" data-tab="reports">Laporan</button>
+            </div>
+
+            <div id="dashboard" class="admin-tab-content">
+                <h2 class="section-title">Overview</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Total Pesanan</h4>
+                        <div class="stat-value" id="totalOrders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Pendapatan</h4>
+                        <div class="stat-value" id="totalRevenue">Rp 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Pelanggan</h4>
+                        <div class="stat-value" id="totalCustomers">0</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-header">
+                    <h3>Pesanan Terbaru</h3>
+                    <button class="download-btn" id="downloadCsv">
+                        <i class="fas fa-download"></i> Export CSV
+                    </button>
+                </div>
+                
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>No Order</th>
+                            <th>Pelanggan</th>
+                            <th>Produk</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                            <th>No HP</th>
+                            <th>Alamat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentOrdersTable">
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #666;">Tidak ada pesanan</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="orders" class="admin-tab-content" style="display: none;">
+                <div class="dashboard-header">
+                    <h2 class="section-title">Manajemen Pesanan</h2>
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="download-btn" id="downloadSelectedCsv">
+                            <i class="fas fa-download"></i> Download Terpilih
+                        </button>
+                        <button class="download-btn" id="downloadAllCsv" style="background: linear-gradient(45deg, #2563eb, #1d4ed8);">
+                            <i class="fas fa-download"></i> Download Semua
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="select-all-container">
+                    <input type="checkbox" id="selectAllOrders">
+                    <label for="selectAllOrders">Pilih Semua Pesanan</label>
+                </div>
+                
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;"></th>
+                            <th>No Order</th>
+                            <th>Pelanggan</th>
+                            <th>Produk</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                            <th>No HP</th>
+                            <th>Alamat</th>
+                            <th>Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="allOrdersTable">
+                        <tr>
+                            <td colspan="9" style="text-align: center; color: #666;">Tidak ada pesanan</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="customers" class="admin-tab-content" style="display: none;">
+                <h2 class="section-title">Database Pelanggan</h2>
+                <div id="customersGrid">
+                    <p style="text-align: center; color: #666;">Tidak ada pelanggan</p>
+                </div>
+            </div>
+
+            <div id="reports" class="admin-tab-content" style="display: none;">
+                <h2 class="section-title">Laporan & Analitik</h2>
+                <div style="background: rgba(30, 30, 50, 0.8); padding: 2rem; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <h3 style="margin-bottom: 1rem; color: #9370db;">Download Laporan</h3>
+                    <button class="download-btn" id="downloadReportCsv" style="margin-right: 1rem;">
+                        <i class="fas fa-download"></i> Semua Data Pesanan (.CSV)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Modal -->
+    <div class="invoice-modal" id="invoiceModal">
+        <div class="invoice-content">
+            <div class="invoice-header">
+                <h2>INVOICE PESANAN</h2>
+                <p>DIMSUM BODUT - Premium Dimsum Delivery</p>
+            </div>
+            <div class="invoice-body" id="invoiceBody">
+                <!-- Invoice content will be generated here -->
+            </div>
+            <div class="invoice-actions">
+                <button class="invoice-btn pdf-btn" id="downloadPdfBtn">
+                    <i class="fas fa-file-pdf"></i> Download PDF
+                </button>
+                <button class="invoice-btn close-invoice" id="closeInvoiceBtn">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize jsPDF properly
+        const jsPDF = window.jspdf.jsPDF;
+
+        // Shopping cart and orders
+        let cart = [];
+        let orders = [];
+        let orderCounter = 1;
+        const ADMIN_PASSWORD = 'dimsumbodut2026';
+
+        // DOM Elements
+        const cartIcon = document.getElementById('cartIcon');
+        const cartSidebar = document.getElementById('cartSidebar');
+        const closeCart = document.getElementById('closeCart');
+        const overlay = document.getElementById('overlay');
+        const cartItems = document.getElementById('cartItems');
+        const cartTotal = document.getElementById('cartTotal');
+        const cartCount = document.getElementById('cartCount');
+        const addToCartBtns = document.querySelectorAll('.add-to-cart');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const successModal = document.getElementById('successModal');
+        const closeModal = document.querySelector('.close-modal');
+        const customerNameInput = document.getElementById('customerName');
+        const phoneInput = document.getElementById('phone');
+        const addressInput = document.getElementById('address');
+        const adminLoginIcon = document.getElementById('adminLoginIcon');
+        const adminLoginModal = document.getElementById('adminLoginModal');
+        const adminPasswordInput = document.getElementById('adminPassword');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const togglePassword = document.getElementById('togglePassword');
+        const adminLogout = document.getElementById('adminLogout');
+        const mainPage = document.getElementById('mainPage');
+        const adminDashboard = document.getElementById('adminDashboard');
+        const adminTabs = document.querySelectorAll('.admin-tab');
+        const adminTabContents = document.querySelectorAll('.admin-tab-content');
+        const invoiceModal = document.getElementById('invoiceModal');
+        const invoiceBody = document.getElementById('invoiceBody');
+        const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+        const closeInvoiceBtn = document.getElementById('closeInvoiceBtn');
+        const selectAllOrders = document.getElementById('selectAllOrders');
+        const downloadSelectedCsv = document.getElementById('downloadSelectedCsv');
+
+        // Current invoice data
+        let currentInvoiceData = null;
+
+        // Show password toggle
+        let showPassword = false;
+        togglePassword.addEventListener('click', function() {
+            showPassword = !showPassword;
+            adminPasswordInput.type = showPassword ? 'text' : 'password';
+            togglePassword.innerHTML = showPassword ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+        });
+
+        // Cart functionality
+        addToCartBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const product = this.getAttribute('data-product');
+                const price = parseInt(this.getAttribute('data-price'));
+                
+                const existingItem = cart.find(item => item.product === product);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        product: product,
+                        price: price,
+                        quantity: 1
+                    });
+                }
+                
+                updateCart();
+                showCart();
+            });
+        });
+
+        // Cart sidebar controls
+        cartIcon.addEventListener('click', showCart);
+        closeCart.addEventListener('click', hideCart);
+        overlay.addEventListener('click', hideCart);
+
+        function showCart() {
+            cartSidebar.classList.add('active');
+            overlay.classList.add('active');
+        }
+
+        function hideCart() {
+            cartSidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        // Update cart display
+        function updateCart() {
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p id="emptyCart">Keranjang belanja Anda kosong.</p>';
+                cartTotal.textContent = 'Total: Rp 0';
+                checkoutBtn.disabled = true;
+                return;
+            }
+            
+            let cartHTML = '';
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                cartHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.product}</div>
+                            <div class="cart-item-price">Rp ${item.price.toLocaleString('id-ID')}</div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn minus" data-index="${index}">-</button>
+                            <span class="quantity">${item.quantity}</span>
+                            <button class="quantity-btn plus" data-index="${index}">+</button>
+                        </div>
+                        <button class="remove-item" data-index="${index}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            cartItems.innerHTML = cartHTML;
+            cartTotal.textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
+            checkoutBtn.disabled = false;
+            
+            // Add event listeners to quantity buttons
+            document.querySelectorAll('.quantity-btn.minus').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    if (cart[index].quantity > 1) {
+                        cart[index].quantity -= 1;
+                    } else {
+                        cart.splice(index, 1);
+                    }
+                    updateCart();
+                });
+            });
+            
+            document.querySelectorAll('.quantity-btn.plus').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    cart[index].quantity += 1;
+                    updateCart();
+                });
+            });
+            
+            document.querySelectorAll('.remove-item').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    cart.splice(index, 1);
+                    updateCart();
+                });
+            });
+        }
+
+        // Handle checkout
+        checkoutBtn.addEventListener('click', function() {
+            const customerName = customerNameInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const address = addressInput.value.trim();
+            
+            if (!customerName || !phone || !address) {
+                alert('Mohon lengkapi semua informasi pelanggan!');
+                return;
+            }
+            
+            const orderNumber = generateOrderNumber();
+            
+            // Process each item in cart as separate orders
+            cart.forEach(item => {
+                const order = {
+                    orderNumber: orderNumber,
+                    productName: item.product,
+                    qty: item.quantity,
+                    phone: phone,
+                    address: address,
+                    customerName: customerName,
+                    productPrice: item.price,
+                    totalPrice: item.price * item.quantity,
+                    timestamp: new Date().toLocaleString('id-ID')
+                };
+                orders.push(order);
+            });
+            
+            // Show success message
+            document.getElementById('successMessage').textContent = `Pesanan Berhasil! Nomor Order: ${orderNumber}`;
+            successModal.style.display = 'flex';
+            
+            // Clear cart and form
+            cart = [];
+            customerNameInput.value = '';
+            phoneInput.value = '';
+            addressInput.value = '';
+            updateCart();
+            hideCart();
+            
+            // Update admin dashboard
+            updateAdminDashboard();
+        });
+
+        // Close modal
+        closeModal.addEventListener('click', function() {
+            successModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(e) {
+            if (e.target === successModal) {
+                successModal.style.display = 'none';
+            }
+        });
+
+        // Admin login
+        adminLoginIcon.addEventListener('click', function() {
+            adminLoginModal.style.display = 'flex';
+        });
+
+        adminLoginBtn.addEventListener('click', function() {
+            const password = adminPasswordInput.value;
+            if (password === ADMIN_PASSWORD) {
+                showAdminDashboard();
+                adminLoginModal.style.display = 'none';
+                adminPasswordInput.value = '';
+                showPassword = false;
+                adminPasswordInput.type = 'password';
+                togglePassword.innerHTML = '<i class="fas fa-eye"></i>';
+            } else {
+                alert('Password admin salah!');
+            }
+        });
+
+        // Admin logout
+        adminLogout.addEventListener('click', function() {
+            showMainPage();
+        });
+
+        // Admin tabs
+        adminTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                
+                // Remove active class from all tabs and contents
+                adminTabs.forEach(t => t.classList.remove('active'));
+                adminTabContents.forEach(content => content.style.display = 'none');
+                
+                // Add active class to clicked tab and show content
+                this.classList.add('active');
+                document.getElementById(tabId).style.display = 'block';
+            });
+        });
+
+        // Show admin dashboard
+        function showAdminDashboard() {
+            mainPage.style.display = 'none';
+            adminDashboard.style.display = 'block';
+            updateAdminDashboard();
+        }
+
+        // Show main page
+        function showMainPage() {
+            adminDashboard.style.display = 'none';
+            mainPage.style.display = 'block';
+        }
+
+        // Update admin dashboard
+        function updateAdminDashboard() {
+            // Update stats
+            document.getElementById('totalOrders').textContent = orders.length;
+            const totalRevenue = orders.reduce((sum, order) => sum + order.totalPrice, 0);
+            document.getElementById('totalRevenue').textContent = `Rp ${totalRevenue.toLocaleString('id-ID')}`;
+            const uniqueCustomers = new Set(orders.map(order => order.customerName)).size;
+            document.getElementById('totalCustomers').textContent = uniqueCustomers;
+            
+            // Update recent orders table
+            const recentOrdersTable = document.getElementById('recentOrdersTable');
+            if (orders.length === 0) {
+                recentOrdersTable.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666;">Tidak ada pesanan</td></tr>';
+            } else {
+                const recentOrders = orders.slice().reverse().slice(0, 10);
+                recentOrdersTable.innerHTML = recentOrders.map(order => `
+                    <tr>
+                        <td style="color: #ff6b6b; font-family: monospace; cursor: pointer;" class="order-number" data-order="${order.orderNumber}">${order.orderNumber}</td>
+                        <td>${order.customerName}</td>
+                        <td>${order.productName}</td>
+                        <td style="text-align: center;">${order.qty}</td>
+                        <td style="color: #ff6b6b; font-weight: bold;">Rp ${order.totalPrice.toLocaleString('id-ID')}</td>
+                        <td>${order.phone}</td>
+                        <td style="max-width: 150px;">${order.address}</td>
+                    </tr>
+                `).join('');
+                
+                // Add click event to order numbers
+                document.querySelectorAll('.order-number').forEach(element => {
+                    element.addEventListener('click', function() {
+                        const orderNumber = this.getAttribute('data-order');
+                        showInvoice(orderNumber);
+                    });
+                });
+            }
+            
+            // Update all orders table
+            updateAllOrdersTable();
+            
+            // Update customers
+            const customersGrid = document.getElementById('customersGrid');
+            if (orders.length === 0) {
+                customersGrid.innerHTML = '<p style="text-align: center; color: #666;">Tidak ada pelanggan</p>';
+            } else {
+                const uniqueCustomers = [...new Set(orders.map(order => order.customerName))];
+                customersGrid.innerHTML = uniqueCustomers.map((customer, index) => {
+                    const customerOrders = orders.filter(order => order.customerName === customer);
+                    const totalSpent = customerOrders.reduce((sum, order) => sum + order.totalPrice, 0);
+                    const totalOrders = customerOrders.length;
+                    
+                    return `
+                        <div class="stat-card" style="margin-bottom: 1rem;">
+                            <h4 style="color: white; margin-bottom: 0.5rem;">${customer}</h4>
+                            <p style="color: #b0b0c0; font-size: 0.9rem;">
+                                Pesanan: ${totalOrders} | Total: Rp ${totalSpent.toLocaleString('id-ID')}
+                            </p>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Update all orders table with checkboxes
+        function updateAllOrdersTable() {
+            const allOrdersTable = document.getElementById('allOrdersTable');
+            if (orders.length === 0) {
+                allOrdersTable.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #666;">Tidak ada pesanan</td></tr>';
+            } else {
+                const allOrders = orders.slice().reverse();
+                allOrdersTable.innerHTML = allOrders.map(order => `
+                    <tr>
+                        <td><input type="checkbox" class="order-checkbox" data-order="${order.orderNumber}"></td>
+                        <td style="color: #ff6b6b; font-family: monospace; cursor: pointer;" class="order-number" data-order="${order.orderNumber}">${order.orderNumber}</td>
+                        <td>${order.customerName}</td>
+                        <td>${order.productName}</td>
+                        <td style="text-align: center;">${order.qty}</td>
+                        <td style="color: #ff6b6b; font-weight: bold;">Rp ${order.totalPrice.toLocaleString('id-ID')}</td>
+                        <td>${order.phone}</td>
+                        <td style="max-width: 150px;">${order.address}</td>
+                        <td>${order.timestamp}</td>
+                    </tr>
+                `).join('');
+                
+                // Add click event to order numbers
+                document.querySelectorAll('.order-number').forEach(element => {
+                    element.addEventListener('click', function() {
+                        const orderNumber = this.getAttribute('data-order');
+                        showInvoice(orderNumber);
+                    });
+                });
+                
+                // Add checkbox event listeners
+                document.querySelectorAll('.order-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', updateSelectAllState);
+                });
+            }
+        }
+
+        // Select all orders functionality
+        selectAllOrders.addEventListener('change', function() {
+            const isChecked = this.checked;
+            document.querySelectorAll('.order-checkbox').forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+        });
+
+        function updateSelectAllState() {
+            const allCheckboxes = document.querySelectorAll('.order-checkbox');
+            const checkedCheckboxes = document.querySelectorAll('.order-checkbox:checked');
+            selectAllOrders.checked = allCheckboxes.length === checkedCheckboxes.length && allCheckboxes.length > 0;
+        }
+
+        // Show invoice modal
+        function showInvoice(orderNumber) {
+            const orderItems = orders.filter(order => order.orderNumber === orderNumber);
+            if (orderItems.length === 0) return;
+            
+            const firstOrder = orderItems[0];
+            currentInvoiceData = {
+                orderNumber: orderNumber,
+                customerName: firstOrder.customerName,
+                phone: firstOrder.phone,
+                address: firstOrder.address,
+                timestamp: firstOrder.timestamp,
+                items: orderItems.map(order => ({
+                    productName: order.productName,
+                    qty: order.qty,
+                    price: order.productPrice,
+                    totalPrice: order.totalPrice
+                })),
+                totalAmount: orderItems.reduce((sum, order) => sum + order.totalPrice, 0)
+            };
+            
+            // Generate invoice HTML
+            let invoiceHTML = `
+                <div class="invoice-details">
+                    <div class="invoice-row">
+                        <strong>Nomor Order:</strong>
+                        <span>${orderNumber}</span>
+                    </div>
+                    <div class="invoice-row">
+                        <strong>Tanggal:</strong>
+                        <span>${firstOrder.timestamp}</span>
+                    </div>
+                </div>
+                
+                <div class="invoice-details">
+                    <h4 style="margin-bottom: 1rem; color: #333;">Informasi Pelanggan</h4>
+                    <div class="invoice-row">
+                        <strong>Nama:</strong>
+                        <span>${firstOrder.customerName}</span>
+                    </div>
+                    <div class="invoice-row">
+                        <strong>No HP:</strong>
+                        <span>${firstOrder.phone}</span>
+                    </div>
+                    <div class="invoice-row">
+                        <strong>Alamat:</strong>
+                        <span>${firstOrder.address}</span>
+                    </div>
+                </div>
+                
+                <div class="invoice-items">
+                    <h4 style="margin-bottom: 1rem; color: #333;">Detail Pesanan</h4>
+                    ${orderItems.map(order => `
+                        <div class="invoice-item">
+                            <span>${order.productName} (x${order.qty})</span>
+                            <span>Rp ${order.totalPrice.toLocaleString('id-ID')}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="invoice-total">
+                    TOTAL: Rp ${currentInvoiceData.totalAmount.toLocaleString('id-ID')}
+                </div>
+            `;
+            
+            invoiceBody.innerHTML = invoiceHTML;
+            invoiceModal.style.display = 'flex';
+        }
+
+        // Close invoice modal
+        closeInvoiceBtn.addEventListener('click', function() {
+            invoiceModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(e) {
+            if (e.target === invoiceModal) {
+                invoiceModal.style.display = 'none';
+            }
+        });
+
+        // Download PDF invoice - Simplified approach using browser's print to PDF
+        downloadPdfBtn.addEventListener('click', function() {
+            if (!currentInvoiceData) return;
+            
+            // Create a new window with invoice content for printing
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Invoice ${currentInvoiceData.orderNumber}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        .invoice-header { text-align: center; border-bottom: 2px solid #ff6b6b; padding-bottom: 20px; margin-bottom: 20px; }
+                        .invoice-header h1 { color: #ff6b6b; }
+                        .invoice-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+                        .invoice-items { margin: 20px 0; }
+                        .invoice-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; }
+                        .invoice-total { text-align: right; font-size: 18px; font-weight: bold; color: #ff6b6b; margin-top: 20px; padding-top: 20px; border-top: 2px solid #ff6b6b; }
+                    </style>
+                </head>
+                <body>
+                    <div class="invoice-header">
+                        <h1>INVOICE PESANAN</h1>
+                        <p>DIMSUM BODUT - Premium Dimsum Delivery</p>
+                    </div>
+                    
+                    <div class="invoice-details">
+                        <div class="invoice-row">
+                            <strong>Nomor Order:</strong>
+                            <span>${currentInvoiceData.orderNumber}</span>
+                        </div>
+                        <div class="invoice-row">
+                            <strong>Tanggal:</strong>
+                            <span>${currentInvoiceData.timestamp}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="invoice-details">
+                        <h3>Informasi Pelanggan</h3>
+                        <div class="invoice-row">
+                            <strong>Nama:</strong>
+                            <span>${currentInvoiceData.customerName}</span>
+                        </div>
+                        <div class="invoice-row">
+                            <strong>No HP:</strong>
+                            <span>${currentInvoiceData.phone}</span>
+                        </div>
+                        <div class="invoice-row">
+                            <strong>Alamat:</strong>
+                            <span>${currentInvoiceData.address}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="invoice-items">
+                        <h3>Detail Pesanan</h3>
+                        ${currentInvoiceData.items.map(item => `
+                            <div class="invoice-item">
+                                <span>${item.productName} (x${item.qty})</span>
+                                <span>Rp ${item.totalPrice.toLocaleString('id-ID')}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="invoice-total">
+                        TOTAL: Rp ${currentInvoiceData.totalAmount.toLocaleString('id-ID')}
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        });
+
+        // Download selected orders CSV
+        downloadSelectedCsv.addEventListener('click', function() {
+            const selectedCheckboxes = document.querySelectorAll('.order-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                alert('Pilih minimal satu pesanan untuk diunduh!');
+                return;
+            }
+            
+            const selectedOrderNumbers = Array.from(selectedCheckboxes).map(cb => cb.getAttribute('data-order'));
+            const selectedOrders = orders.filter(order => selectedOrderNumbers.includes(order.orderNumber));
+            
+            downloadOrdersCSV(selectedOrders, 'dimsum_bodut_selected_orders');
+        });
+
+        // Generate order number
+        function generateOrderNumber() {
+            const timestamp = Date.now().toString().slice(-6);
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `DB${timestamp}${random}`;
+        }
+
+        // Download CSV
+        function downloadCSV(filename, data) {
+            const csvContent = "text/csv;charset=utf-8," + encodeURIComponent(data);
+            const link = document.createElement("a");
+            link.setAttribute("href", csvContent);
+            link.setAttribute("download", filename);
+            link.style.visibility = "hidden";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Download orders CSV
+        function downloadOrdersCSV(ordersToDownload, filenamePrefix) {
+            if (ordersToDownload.length === 0) {
+                alert('Tidak ada data pesanan untuk diunduh!');
+                return;
+            }
+            
+            const headers = ['No Order', 'Nama Pemesan', 'Produk', 'Qty', 'Total', 'No HP', 'Alamat', 'Tanggal'];
+            const csvContent = [
+                headers.join(','),
+                ...ordersToDownload.map(order => 
+                    `"${order.orderNumber}","${order.customerName}","${order.productName}","${order.qty}","${order.totalPrice}","${order.phone}","${order.address}","${order.timestamp}"`
+                )
+            ].join('\n');
+            
+            const filename = `${filenamePrefix}_${new Date().toISOString().split('T')[0]}.csv`;
+            downloadCSV(filename, csvContent);
+        }
+
+        // CSV download handlers
+        document.getElementById('downloadCsv').addEventListener('click', function() {
+            if (orders.length === 0) {
+                alert('Tidak ada data pesanan untuk diunduh!');
+                return;
+            }
+            
+            const recentOrders = orders.slice().reverse().slice(0, 10);
+            downloadOrdersCSV(recentOrders, 'dimsum_bodut_recent_orders');
+        });
+
+        document.getElementById('downloadAllCsv').addEventListener('click', function() {
+            downloadOrdersCSV(orders.slice().reverse(), 'dimsum_bodut_all_orders');
+        });
+
+        document.getElementById('downloadReportCsv').addEventListener('click', function() {
+            downloadOrdersCSV(orders.slice().reverse(), 'dimsum_bodut_report');
+        });
+
+        // Initialize with sample data for demo
+        const sampleOrder1 = {
+            orderNumber: 'DB123456789',
+            productName: 'DIMSUM ORIGINAL',
+            qty: 2,
+            phone: '081234567890',
+            address: 'Jl. Contoh No. 123, Jakarta',
+            customerName: 'Budi Santoso',
+            productPrice: 25000,
+            totalPrice: 50000,
+            timestamp: '07/01/2026, 14:30:00'
+        };
+        const sampleOrder2 = {
+            orderNumber: 'DB123456790',
+            productName: 'DIMSUM MENTAI',
+            qty: 1,
+            phone: '081234567891',
+            address: 'Jl. Contoh No. 124, Jakarta',
+            customerName: 'Siti Rahayu',
+            productPrice: 35000,
+            totalPrice: 35000,
+            timestamp: '07/01/2026, 15:45:00'
+        };
+        const sampleOrder3 = {
+            orderNumber: 'DB123456791',
+            productName: 'DIMSUM FROZEN',
+            qty: 3,
+            phone: '081234567892',
+            address: 'Jl. Contoh No. 125, Jakarta',
+            customerName: 'Ahmad Fauzi',
+            productPrice: 20000,
+            totalPrice: 60000,
+            timestamp: '07/01/2026, 16:20:00'
+        };
+        orders.push(sampleOrder1, sampleOrder2, sampleOrder3);
+        updateAdminDashboard();
+    </script>
+</body>
+</html>
+
