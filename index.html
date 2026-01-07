@@ -936,7 +936,7 @@
                 </div>
                 <button class="admin-login-btn" id="adminLoginBtn">Login</button>
                 <p style="color: #666; font-size: 0.8rem; margin-top: 1rem; text-align: center;">
-                    Password: dimsumbodut2026
+                    Hanya untuk admin!
                 </p>
             </div>
         </div>
@@ -998,7 +998,7 @@
                             <th>No Order</th>
                             <th>Pelanggan</th>
                             <th>Produk</th>
-                            <th>Qty</th>
+                            <th>Qty Total</th>
                             <th>Total</th>
                             <th>No HP</th>
                             <th>Alamat</th>
@@ -1037,7 +1037,7 @@
                             <th>No Order</th>
                             <th>Pelanggan</th>
                             <th>Produk</th>
-                            <th>Qty</th>
+                            <th>Qty Total</th>
                             <th>Total</th>
                             <th>No HP</th>
                             <th>Alamat</th>
@@ -1359,6 +1359,38 @@
             mainPage.style.display = 'block';
         }
 
+        // Function to group orders by order number
+        function groupOrdersByOrderNumber() {
+            const groupedOrders = {};
+            
+            orders.forEach(order => {
+                if (!groupedOrders[order.orderNumber]) {
+                    groupedOrders[order.orderNumber] = {
+                        orderNumber: order.orderNumber,
+                        customerName: order.customerName,
+                        phone: order.phone,
+                        address: order.address,
+                        timestamp: order.timestamp,
+                        products: [],
+                        totalQty: 0,
+                        totalPrice: 0
+                    };
+                }
+                
+                groupedOrders[order.orderNumber].products.push({
+                    productName: order.productName,
+                    qty: order.qty,
+                    price: order.productPrice,
+                    totalPrice: order.totalPrice
+                });
+                
+                groupedOrders[order.orderNumber].totalQty += order.qty;
+                groupedOrders[order.orderNumber].totalPrice += order.totalPrice;
+            });
+            
+            return Object.values(groupedOrders);
+        }
+
         // Update admin dashboard
         function updateAdminDashboard() {
             // Update stats
@@ -1368,18 +1400,23 @@
             const uniqueCustomers = new Set(orders.map(order => order.customerName)).size;
             document.getElementById('totalCustomers').textContent = uniqueCustomers;
             
+            // Get grouped orders (one row per order number)
+            const groupedOrders = groupOrdersByOrderNumber();
+            
             // Update recent orders table
             const recentOrdersTable = document.getElementById('recentOrdersTable');
-            if (orders.length === 0) {
+            if (groupedOrders.length === 0) {
                 recentOrdersTable.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666;">Tidak ada pesanan</td></tr>';
             } else {
-                const recentOrders = orders.slice().reverse().slice(0, 10);
+                const recentOrders = groupedOrders.slice(0, 10);
                 recentOrdersTable.innerHTML = recentOrders.map(order => `
                     <tr>
                         <td style="color: #ff6b6b; font-family: monospace; cursor: pointer;" class="order-number" data-order="${order.orderNumber}">${order.orderNumber}</td>
                         <td>${order.customerName}</td>
-                        <td>${order.productName}</td>
-                        <td style="text-align: center;">${order.qty}</td>
+                        <td>
+                            ${order.products.map(p => p.productName).join(', ')}
+                        </td>
+                        <td style="text-align: center;">${order.totalQty}</td>
                         <td style="color: #ff6b6b; font-weight: bold;">Rp ${order.totalPrice.toLocaleString('id-ID')}</td>
                         <td>${order.phone}</td>
                         <td style="max-width: 150px;">${order.address}</td>
@@ -1424,17 +1461,21 @@
         // Update all orders table with checkboxes
         function updateAllOrdersTable() {
             const allOrdersTable = document.getElementById('allOrdersTable');
-            if (orders.length === 0) {
+            const groupedOrders = groupOrdersByOrderNumber();
+            
+            if (groupedOrders.length === 0) {
                 allOrdersTable.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #666;">Tidak ada pesanan</td></tr>';
             } else {
-                const allOrders = orders.slice().reverse();
+                const allOrders = groupedOrders;
                 allOrdersTable.innerHTML = allOrders.map(order => `
                     <tr>
                         <td><input type="checkbox" class="order-checkbox" data-order="${order.orderNumber}"></td>
                         <td style="color: #ff6b6b; font-family: monospace; cursor: pointer;" class="order-number" data-order="${order.orderNumber}">${order.orderNumber}</td>
                         <td>${order.customerName}</td>
-                        <td>${order.productName}</td>
-                        <td style="text-align: center;">${order.qty}</td>
+                        <td>
+                            ${order.products.map(p => p.productName).join(', ')}
+                        </td>
+                        <td style="text-align: center;">${order.totalQty}</td>
                         <td style="color: #ff6b6b; font-weight: bold;">Rp ${order.totalPrice.toLocaleString('id-ID')}</td>
                         <td>${order.phone}</td>
                         <td style="max-width: 150px;">${order.address}</td>
@@ -1551,11 +1592,10 @@
             }
         });
 
-        // Download PDF invoice - Fixed version
+        // Download PDF invoice
         downloadPdfBtn.addEventListener('click', function() {
             if (!currentInvoiceData) return;
             
-            // Create a new window with invoice content for printing
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`
                 <!DOCTYPE html>
@@ -1659,15 +1699,16 @@
                 return;
             }
             
+            const groupedOrders = groupOrdersByOrderNumber();
             const selectedOrderNumbers = Array.from(selectedCheckboxes).map(cb => cb.getAttribute('data-order'));
-            const selectedOrders = orders.filter(order => selectedOrderNumbers.includes(order.orderNumber));
+            const selectedOrders = groupedOrders.filter(order => selectedOrderNumbers.includes(order.orderNumber));
             
             // Prepare data for Excel
             const excelData = selectedOrders.map(order => ({
                 'No Order': order.orderNumber,
                 'Nama Pemesan': order.customerName,
-                'Produk': order.productName,
-                'Qty': order.qty,
+                'Produk': order.products.map(p => p.productName).join(', '),
+                'Qty Total': order.totalQty,
                 'Total': order.totalPrice,
                 'No HP': order.phone,
                 'Alamat': order.address,
@@ -1686,17 +1727,18 @@
 
         // Excel download handlers
         document.getElementById('downloadXls').addEventListener('click', function() {
-            if (orders.length === 0) {
+            const groupedOrders = groupOrdersByOrderNumber();
+            if (groupedOrders.length === 0) {
                 alert('Tidak ada data pesanan untuk diunduh!');
                 return;
             }
             
-            const recentOrders = orders.slice().reverse().slice(0, 10);
+            const recentOrders = groupedOrders.slice(0, 10);
             const excelData = recentOrders.map(order => ({
                 'No Order': order.orderNumber,
                 'Nama Pemesan': order.customerName,
-                'Produk': order.productName,
-                'Qty': order.qty,
+                'Produk': order.products.map(p => p.productName).join(', '),
+                'Qty Total': order.totalQty,
                 'Total': order.totalPrice,
                 'No HP': order.phone,
                 'Alamat': order.address,
@@ -1707,17 +1749,17 @@
         });
 
         document.getElementById('downloadAllXls').addEventListener('click', function() {
-            if (orders.length === 0) {
+            const groupedOrders = groupOrdersByOrderNumber();
+            if (groupedOrders.length === 0) {
                 alert('Tidak ada data pesanan untuk diunduh!');
                 return;
             }
             
-            const allOrders = orders.slice().reverse();
-            const excelData = allOrders.map(order => ({
+            const excelData = groupedOrders.map(order => ({
                 'No Order': order.orderNumber,
                 'Nama Pemesan': order.customerName,
-                'Produk': order.productName,
-                'Qty': order.qty,
+                'Produk': order.products.map(p => p.productName).join(', '),
+                'Qty Total': order.totalQty,
                 'Total': order.totalPrice,
                 'No HP': order.phone,
                 'Alamat': order.address,
@@ -1728,17 +1770,17 @@
         });
 
         document.getElementById('downloadReportXls').addEventListener('click', function() {
-            if (orders.length === 0) {
+            const groupedOrders = groupOrdersByOrderNumber();
+            if (groupedOrders.length === 0) {
                 alert('Tidak ada data pesanan untuk diunduh!');
                 return;
             }
             
-            const allOrders = orders.slice().reverse();
-            const excelData = allOrders.map(order => ({
+            const excelData = groupedOrders.map(order => ({
                 'No Order': order.orderNumber,
                 'Nama Pemesan': order.customerName,
-                'Produk': order.productName,
-                'Qty': order.qty,
+                'Produk': order.products.map(p => p.productName).join(', '),
+                'Qty Total': order.totalQty,
                 'Total': order.totalPrice,
                 'No HP': order.phone,
                 'Alamat': order.address,
@@ -1761,26 +1803,26 @@
             timestamp: '07/01/2026, 14:30:00'
         };
         const sampleOrder2 = {
-            orderNumber: 'DB123456790',
+            orderNumber: 'DB123456789', // Same order number!
             productName: 'DIMSUM MENTAI',
             qty: 1,
+            phone: '081234567890',
+            address: 'Jl. Contoh No. 123, Jakarta',
+            customerName: 'Budi Santoso',
+            productPrice: 35000,
+            totalPrice: 35000,
+            timestamp: '07/01/2026, 14:30:00'
+        };
+        const sampleOrder3 = {
+            orderNumber: 'DB123456790',
+            productName: 'DIMSUM FROZEN',
+            qty: 3,
             phone: '081234567891',
             address: 'Jl. Contoh No. 124, Jakarta',
             customerName: 'Siti Rahayu',
-            productPrice: 35000,
-            totalPrice: 35000,
-            timestamp: '07/01/2026, 15:45:00'
-        };
-        const sampleOrder3 = {
-            orderNumber: 'DB123456791',
-            productName: 'DIMSUM FROZEN',
-            qty: 3,
-            phone: '081234567892',
-            address: 'Jl. Contoh No. 125, Jakarta',
-            customerName: 'Ahmad Fauzi',
             productPrice: 20000,
             totalPrice: 60000,
-            timestamp: '07/01/2026, 16:20:00'
+            timestamp: '07/01/2026, 15:45:00'
         };
         orders.push(sampleOrder1, sampleOrder2, sampleOrder3);
         updateAdminDashboard();
